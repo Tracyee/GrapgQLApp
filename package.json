@@ -14,7 +14,7 @@
   },
   "author": "Yi Cai",
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/Tracyee/graphql-app",
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
