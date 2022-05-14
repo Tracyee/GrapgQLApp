@@ -4,7 +4,9 @@
   "private": true,
   "description": "A complete App with GraphQL, Node.js, MongoDB, React.js, and Typescript",
   "scripts": {
-    "dev": "webpack serve --mode development --config webpack.dev.ts",
+    "dev": "concurrently \"yarn dev-server\" \"yarn dev-client\"",
+    "dev-client": "webpack serve --mode development --config webpack.dev.ts",
+    "dev-server": "nodemon server/src/app.ts",
     "build": "webpack --mode production --config webpack.prod.ts",
     "prepare": "husky install"
   },

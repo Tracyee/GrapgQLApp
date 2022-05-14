@@ -45,5 +45,7 @@
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.stylelint": true
-  }
+  },
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": true
 }
