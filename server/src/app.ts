@@ -4,17 +4,23 @@ import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 import Event from './models/event';
+import User from './models/user';
 
 const app = express();
 
-type ArgType = {
+type CreateEventArgType = {
   eventInput: {
     title: string;
     description: string;
     price: number;
     date: string;
   };
+};
+
+type CreateUserArgType = {
+  userInput: { email: string; password: string };
 };
 
 app.use(express.json());
@@ -36,6 +42,12 @@ app.use(
         date: String!
       }
 
+      type User {
+        _id: ID!
+        email: String!
+        password: String
+      }
+
       input EventInput {
         title: String!
         description: String!
@@ -43,12 +55,18 @@ app.use(
         date: String!
       }
 
+      input UserInput {
+        email: String!
+        password: String!
+      }
+
       type RootQuery {
         events: [Event!]!
       }
 
       type RootMutation {
-        createEvent(eventInput: EventInput!): Event
+        createEvent(eventInput: EventInput): Event
+        createUser(userInput: UserInput): User
       }
 
       schema {
@@ -68,17 +86,43 @@ app.use(
           throw err;
         }
       },
-      createEvent: async (args: ArgType) => {
-        const event = new Event({
-          title: args.eventInput.title,
-          description: args.eventInput.description,
-          price: +args.eventInput.price,
-          date: new Date(args.eventInput.date),
-        });
+      createEvent: async (args: CreateEventArgType) => {
         try {
+          const event = new Event({
+            title: args.eventInput.title,
+            description: args.eventInput.description,
+            price: +args.eventInput.price,
+            date: new Date(args.eventInput.date),
+            creator: '6280849465662c5b31dc5d21',
+          });
           const result = await event.save();
+          const user = await User.findById('6280849465662c5b31dc5d21');
+          if (!user) {
+            throw new Error('User not found');
+          }
+          user.createdEvents.push(event);
+          await user.save();
           console.log(result);
           return { ...result._doc };
+        } catch (err) {
+          console.log(err);
+          throw err;
+        }
+      },
+      createUser: async (args: CreateUserArgType) => {
+        try {
+          const user = await User.findOne({ email: args.userInput.email });
+          if (user) {
+            throw new Error('User already exists');
+          }
+          const hashedPassword = await bcrypt.hash(args.userInput.password, 12);
+          const newUser = new User({
+            email: args.userInput.email,
+            password: hashedPassword,
+          });
+          const result = await newUser.save();
+          console.log(result);
+          return { ...result._doc, password: null };
         } catch (err) {
           console.log(err);
           throw err;
