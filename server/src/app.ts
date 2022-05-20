@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 
 import eventBookingSchema from './graphql/schema/index';
 import eventBookingResolvers from './graphql/resolvers/index';
+import authorized from './middlewares/authorized';
 
 const app = express();
 
@@ -13,6 +14,8 @@ app.use(
     extended: true,
   }),
 );
+
+app.use(authorized);
 
 app.use(
   '/graphql',

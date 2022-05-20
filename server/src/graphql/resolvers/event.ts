@@ -22,7 +22,10 @@ export default {
       throw err;
     }
   },
-  createEvent: async (args: CreateEventArgType) => {
+  createEvent: async (args: CreateEventArgType, req: any) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated!');
+    }
     const event = new Event({
       title: args.eventInput.title,
       description: args.eventInput.description,

@@ -13,7 +13,10 @@ type CancelBookingArgType = {
 };
 
 export default {
-  bookings: async () => {
+  bookings: async (args: any, req: any) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated!');
+    }
     try {
       const bookings = await Booking.find();
       return bookings.map(booking => transformBooking(booking));
@@ -22,7 +25,10 @@ export default {
       throw err;
     }
   },
-  bookEvent: async (args: BookEventArgType) => {
+  bookEvent: async (args: BookEventArgType, req: any) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated!');
+    }
     try {
       const fetchedEvent = await Event.findOne({ _id: args.eventId });
       const booking = new Booking({
@@ -36,7 +42,10 @@ export default {
       throw err;
     }
   },
-  cancelBooking: async (args: CancelBookingArgType) => {
+  cancelBooking: async (args: CancelBookingArgType, req: any) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated!');
+    }
     try {
       const booking = await Booking.findById(args.bookingId).populate('event');
       const event = transformEvent(booking._doc.event);
