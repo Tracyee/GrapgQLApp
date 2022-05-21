@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 import bcrypt from 'bcryptjs';
-import jsonwebtoken from 'jsonwebtoken';
+import JWT from 'jsonwebtoken';
 import User from '../../models/user';
 
 type CreateUserArgType = {
@@ -43,8 +43,8 @@ export default {
       if (!isEqual) {
         throw new Error('Password is incorrect');
       }
-      // jsonwebtoken sign with a large secret key
-      const token = jsonwebtoken.sign(
+      // JWT sign with a large secret key
+      const token = JWT.sign(
         { userId: user.id, email: user.email },
         'supersecretkey',
         {

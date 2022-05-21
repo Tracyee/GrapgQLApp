@@ -1,11 +1,13 @@
 /* eslint-disable no-console */
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import './Auth.less';
+import AuthContext from '../contexts/authContext';
 
 const AuthPage = (): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [isLogin, setIsLogin] = useState(false);
+  const authContext = useContext(AuthContext);
 
   const handleSubmit: React.FormEventHandler = e => {
     e.preventDefault();
@@ -60,6 +62,11 @@ const AuthPage = (): JSX.Element => {
       })
       .then(resData => {
         console.log(resData);
+        authContext.login(
+          resData.data.login.token,
+          resData.data.login.userId,
+          resData.data.login.tokenExpiration,
+        );
       })
       .catch(err => {
         console.log(err);

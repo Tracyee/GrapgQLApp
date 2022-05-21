@@ -1,7 +1,7 @@
 /**
  * This middleware checks if the user is authorized to access the resources.
  */
-import jsonwebtoken from 'jsonwebtoken';
+import JWT from 'jsonwebtoken';
 import { NextFunction } from 'express';
 
 export default (req: any, res: any, next: NextFunction) => {
@@ -17,7 +17,7 @@ export default (req: any, res: any, next: NextFunction) => {
   }
   let decodedToken;
   try {
-    decodedToken = jsonwebtoken.verify(token, 'supersecretkey');
+    decodedToken = JWT.verify(token, 'supersecretkey');
   } catch (err) {
     req.isAuth = false;
     return next();
@@ -27,6 +27,6 @@ export default (req: any, res: any, next: NextFunction) => {
     return next();
   }
   req.isAuth = true;
-  req.userId = (decodedToken as jsonwebtoken.JwtPayload).userId;
+  req.userId = (decodedToken as JWT.JwtPayload).userId;
   return next();
 };
