@@ -32,7 +32,7 @@ export default {
     try {
       const fetchedEvent = await Event.findOne({ _id: args.eventId });
       const booking = new Booking({
-        user: '62871f152a043ac46ae54ff9',
+        user: req.userId,
         event: fetchedEvent,
       });
       const result = await booking.save();

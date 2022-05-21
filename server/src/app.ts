@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import eventBookingSchema from './graphql/schema/index';
 import eventBookingResolvers from './graphql/resolvers/index';
 import authorized from './middlewares/authorized';
+import cors from './middlewares/cors';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(
   }),
 );
 
+app.use(cors);
 app.use(authorized);
 
 app.use(
