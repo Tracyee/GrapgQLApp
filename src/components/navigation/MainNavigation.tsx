@@ -1,11 +1,11 @@
-import React, { useContext } from 'react';
-import { NavLink } from 'react-router-dom';
-import AuthContext from '../../contexts/authContext';
-
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/authContext';
 import './mainNavigation.less';
 
 const MainNavigation = (): JSX.Element => {
-  const authContext = useContext(AuthContext);
+  const auth = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="main-navigation">
@@ -14,7 +14,7 @@ const MainNavigation = (): JSX.Element => {
       </div>
       <nav className="main-navigation-items">
         <ul>
-          {!authContext.token && (
+          {!auth.token && (
             <li>
               <NavLink to="/auth">Authenticate</NavLink>
             </li>
@@ -22,10 +22,20 @@ const MainNavigation = (): JSX.Element => {
           <li>
             <NavLink to="/events">Events</NavLink>
           </li>
-          {authContext.token && (
-            <li>
-              <NavLink to="/bookings">Bookings</NavLink>
-            </li>
+          {auth.token && (
+            <>
+              <li>
+                <NavLink to="/bookings">Bookings</NavLink>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => auth.logout(() => navigate('/'))}
+                >
+                  Logout
+                </button>
+              </li>
+            </>
           )}
         </ul>
       </nav>

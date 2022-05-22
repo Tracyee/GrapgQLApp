@@ -24,6 +24,7 @@
 
 .main-navigation-items ul {
   display: flex;
+  align-items: center;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -33,15 +34,24 @@
   margin: 0 1rem;
 }
 
-.main-navigation-items a {
+.main-navigation-items a,
+.main-navigation-items button {
+  margin: 0;
   padding: 0.25rem 0.5rem;
   color: white;
+  font: inherit;
   text-decoration: none;
+  vertical-align: middle;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .main-navigation-items a:hover,
 .main-navigation-items a:active,
-.main-navigation-items a.active {
+.main-navigation-items a.active,
+.main-navigation-items button:hover,
+.main-navigation-items button:active {
   color: #5101d1;
   background: #fff;
   border-radius: 5px;

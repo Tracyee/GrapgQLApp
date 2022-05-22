@@ -1,52 +1,54 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+  Navigate,
+} from 'react-router-dom';
 
 import './app.less';
 import MainNavigation from './components/navigation/mainNavigation';
 import AuthPage from './pages/auth';
 import BookingsPage from './pages/bookings';
 import EventsPage from './pages/events';
-import AuthContext from './contexts/authContext';
+import { AuthProvider, useAuth } from './contexts/authContext';
+import { LocationState } from './types/LocationState';
 
-const App: React.FC<Record<string, never>> = () => {
-  const [token, setToken] = React.useState<string>('');
-  const [userId, setUserId] = React.useState<string>('');
+const RequireAuth = ({ children }: { children: JSX.Element }) => {
+  const auth = useAuth();
+  const location = useLocation();
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const login = (token: string, userId: string, tokenExpiration: number) => {
-    setToken(token);
-    setUserId(userId);
-  };
+  const locationState: LocationState = { from: location };
 
-  const logout = () => {
-    setToken('');
-    setUserId('');
-  };
+  if (!auth.token) {
+    return <Navigate to="/auth" state={locationState} replace />;
+  }
 
-  return (
-    <BrowserRouter>
-      <>
-        <AuthContext.Provider
-          value={{
-            token,
-            userId,
-            login,
-            logout,
-          }}
-        >
-          <MainNavigation />
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={token ? <EventsPage /> : <AuthPage />} />
-              {!token && <Route path="/auth" element={<AuthPage />} />}
-              <Route path="/events" element={<EventsPage />} />
-              {token && <Route path="/bookings" element={<BookingsPage />} />}
-            </Routes>
-          </main>
-        </AuthContext.Provider>
-      </>
-    </BrowserRouter>
-  );
+  return children;
 };
+
+const App: React.FC<Record<string, never>> = () => (
+  <Router>
+    <AuthProvider>
+      <MainNavigation />
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<AuthPage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route
+            path="/bookings"
+            element={
+              <RequireAuth>
+                <BookingsPage />
+              </RequireAuth>
+            }
+          />
+        </Routes>
+      </main>
+    </AuthProvider>
+  </Router>
+);
 
 export default App;

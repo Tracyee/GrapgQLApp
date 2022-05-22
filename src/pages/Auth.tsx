@@ -1,13 +1,20 @@
 /* eslint-disable no-console */
-import React, { useRef, useState, useContext } from 'react';
+import React, { useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Auth.less';
-import AuthContext from '../contexts/authContext';
+import { useAuth } from '../contexts/authContext';
+import { LocationState } from '../types/LocationState';
 
 const AuthPage = (): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-  const [isLogin, setIsLogin] = useState(false);
-  const authContext = useContext(AuthContext);
+  const [isLogin, setIsLogin] = useState(true);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = (location.state as LocationState)?.from?.pathname || '/events';
+  const auth = useAuth();
 
   const handleSubmit: React.FormEventHandler = e => {
     e.preventDefault();
@@ -62,10 +69,11 @@ const AuthPage = (): JSX.Element => {
       })
       .then(resData => {
         console.log(resData);
-        authContext.login(
+        auth.login(
           resData.data.login.token,
           resData.data.login.userId,
-          resData.data.login.tokenExpiration,
+          () => navigate(from, { replace: true }),
+          // resData.data.login.tokenExpiration,
         );
       })
       .catch(err => {
@@ -86,10 +94,10 @@ const AuthPage = (): JSX.Element => {
           <input type="password" id="password" ref={passwordRef} />
         </div>
         <div className="form-actions">
+          <button type="submit">Submit</button>
           <button type="button" onClick={() => setIsLogin(!isLogin)}>
             Switch to {isLogin ? 'Signup' : 'Login'}
           </button>
-          <button type="submit">Submit</button>
         </div>
       </form>
     </div>
