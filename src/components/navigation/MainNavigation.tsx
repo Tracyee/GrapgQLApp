@@ -1,10 +1,14 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/authContext';
+import { LocationState } from '../../types/LocationState';
 import './mainNavigation.less';
 
 const MainNavigation = (): JSX.Element => {
   const auth = useAuth();
+  const location = useLocation();
+  const locationState: LocationState = { from: location };
+
   const navigate = useNavigate();
 
   return (
@@ -30,7 +34,11 @@ const MainNavigation = (): JSX.Element => {
               <li>
                 <button
                   type="button"
-                  onClick={() => auth.logout(() => navigate('/'))}
+                  onClick={() =>
+                    auth.logout(() =>
+                      navigate('/', { state: locationState, replace: true }),
+                    )
+                  }
                 >
                   Logout
                 </button>
