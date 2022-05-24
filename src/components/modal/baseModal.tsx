@@ -8,7 +8,7 @@ type ModalBaseProps = {
   title: string;
   children: React.ReactNode;
   onClose: VoidFunction;
-  onConfirm: VoidFunction;
+  onConfirm: React.FormEventHandler<HTMLButtonElement>;
 };
 
 const ModalBase = ({
@@ -30,7 +30,7 @@ const ModalBase = ({
           <button type="button" className="btn" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="btn" onClick={onConfirm}>
+          <button type="submit" className="btn" onClick={onConfirm}>
             Confirm
           </button>
         </section>
