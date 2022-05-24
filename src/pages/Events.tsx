@@ -1,14 +1,20 @@
 import React, { EffectCallback } from 'react';
-import useEventModal from '../components/modal/useEventModal';
+import useCreateEvent from '../components/modal/useCreateEvent';
+import useViewEvent from '../components/modal/useViewEvent';
+import EventList from '../components/events/eventList/eventList';
+import Spinner from '../components/spinner/spinner';
 import { Event } from '../types/payload';
 import { useAuth } from '../contexts/authContext';
 import './events.less';
 
 const EventsPage = (): JSX.Element => {
-  const [events, setEvents] = React.useState<Event[]>();
+  const [events, setEvents] = React.useState<Event[]>(new Array<Event>());
+  const [selectedEvent, setSelectedEvent] = React.useState<Event>();
+  const [isLoading, setIsLoading] = React.useState(false);
   const auth = useAuth();
 
   const fetchEvents: EffectCallback = () => {
+    setIsLoading(true);
     const requestBody = {
       query: `
           query {
@@ -42,38 +48,57 @@ const EventsPage = (): JSX.Element => {
       })
       .then(resData => {
         setEvents(resData.data.events);
+        setIsLoading(false);
       })
       .catch(err => {
         console.log(err);
+        setIsLoading(false);
       });
   };
 
   React.useEffect(fetchEvents, []);
 
-  const eventList = events?.map(event => (
-    // eslint-disable-next-line no-underscore-dangle
-    <li key={event._id} className="events-list-item">
-      {event.title}
-    </li>
-  ));
+  const { open: openCreateEventModal, ModalDialog: CreateEventModal } =
+    useCreateEvent({
+      modalTitle: 'Create Event',
+      onSuccess: (createdEvent: Event) => {
+        setEvents([
+          ...events,
+          { ...createdEvent, creator: { _id: auth.userId } },
+        ]);
+      },
+    });
 
-  const { open, ModalDialog } = useEventModal({
-    modalTitle: 'Create Event',
-    onSuccess: fetchEvents,
-  });
+  const { open: openViewEventModal, ModalDialog: ViewEventModal } =
+    useViewEvent({ selectedEvent });
+
+  const viewEventDetailHandler = (eventId: string): void => {
+    // eslint-disable-next-line no-underscore-dangle
+    setSelectedEvent(events.find(event => event._id === eventId));
+    openViewEventModal();
+  };
 
   return (
     <>
       {auth.token && (
         <div className="events-control">
           <p>Share your own Events!</p>
-          <ModalDialog />
-          <button type="button" className="btn" onClick={open}>
+          <CreateEventModal />
+          <button type="button" className="btn" onClick={openCreateEventModal}>
             Create Event
           </button>
         </div>
       )}
-      <ul className="events-list">{eventList}</ul>
+      <ViewEventModal />
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <EventList
+          events={events}
+          authUserId={auth.userId}
+          onViewDetail={viewEventDetailHandler}
+        />
+      )}
     </>
   );
 };

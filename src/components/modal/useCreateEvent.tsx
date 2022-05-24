@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
-import React, { EffectCallback } from 'react';
+import React from 'react';
 import { useAuth } from '../../contexts/authContext';
+import { Event } from '../../types/payload';
 import ModalBase from './baseModal';
 
 interface EventModalType {
@@ -10,12 +11,12 @@ interface EventModalType {
   close: VoidFunction;
 }
 
-const useEventModal = ({
+const useCreateEvent = ({
   modalTitle,
   onSuccess,
 }: {
   modalTitle: string;
-  onSuccess: EffectCallback;
+  onSuccess: (createdEvent: Event) => void;
 }): EventModalType => {
   const [show, setShow] = React.useState(false);
   const auth = useAuth();
@@ -56,10 +57,6 @@ const useEventModal = ({
               description
               date
               price
-              creator {
-                _id
-                email
-              }
             }
           }
         `,
@@ -83,7 +80,7 @@ const useEventModal = ({
       })
       .then(resData => {
         console.log(resData);
-        onSuccess();
+        onSuccess(resData.data.createEvent as Event);
       })
       .catch(err => {
         console.log(err);
@@ -121,4 +118,4 @@ const useEventModal = ({
   return { show, ModalDialog, open, close };
 };
 
-export default useEventModal;
+export default useCreateEvent;
