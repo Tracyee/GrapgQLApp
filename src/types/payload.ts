@@ -12,3 +12,11 @@ export type Event = {
   date: string;
   creator?: User;
 };
+
+export type Booking = {
+  _id: string;
+  event: Event;
+  user: User;
+  createdAt: string;
+  updatedAt: string;
+};

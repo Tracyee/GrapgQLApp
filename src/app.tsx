@@ -1,32 +1,12 @@
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useLocation,
-  Navigate,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import './app.less';
 import MainNavigation from './components/navigation/mainNavigation';
 import AuthPage from './pages/auth';
 import BookingsPage from './pages/bookings';
 import EventsPage from './pages/events';
-import { AuthProvider, useAuth } from './contexts/authContext';
-import { LocationState } from './types/LocationState';
-
-const RequireAuth = ({ children }: { children: JSX.Element }) => {
-  const auth = useAuth();
-  const location = useLocation();
-
-  const locationState: LocationState = { from: location };
-
-  if (!auth.token) {
-    return <Navigate to="/auth" state={locationState} replace />;
-  }
-
-  return children;
-};
+import { AuthProvider, RequireAuth } from './contexts/authContext';
 
 const App: React.FC<Record<string, never>> = () => (
   <Router>

@@ -26,24 +26,22 @@ const MainNavigation = (): JSX.Element => {
           <li>
             <NavLink to="/events">Events</NavLink>
           </li>
+          <li>
+            <NavLink to="/bookings">Bookings</NavLink>
+          </li>
           {auth.token && (
-            <>
-              <li>
-                <NavLink to="/bookings">Bookings</NavLink>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() =>
-                    auth.logout(() =>
-                      navigate('/', { state: locationState, replace: true }),
-                    )
-                  }
-                >
-                  Logout
-                </button>
-              </li>
-            </>
+            <li>
+              <button
+                type="button"
+                onClick={() =>
+                  auth.logout(() =>
+                    navigate('/', { state: locationState, replace: true }),
+                  )
+                }
+              >
+                Logout
+              </button>
+            </li>
           )}
         </ul>
       </nav>

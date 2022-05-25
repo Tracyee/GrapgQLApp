@@ -1,4 +1,5 @@
-import React, { EffectCallback } from 'react';
+/* eslint-disable no-underscore-dangle */
+import React, { EffectCallback, useCallback } from 'react';
 import useCreateEvent from '../components/modal/useCreateEvent';
 import useViewEvent from '../components/modal/useViewEvent';
 import EventList from '../components/events/eventList/eventList';
@@ -13,7 +14,7 @@ const EventsPage = (): JSX.Element => {
   const [isLoading, setIsLoading] = React.useState(false);
   const auth = useAuth();
 
-  const fetchEvents: EffectCallback = () => {
+  const fetchEvents: EffectCallback = useCallback(() => {
     setIsLoading(true);
     const requestBody = {
       query: `
@@ -51,12 +52,13 @@ const EventsPage = (): JSX.Element => {
         setIsLoading(false);
       })
       .catch(err => {
+        // eslint-disable-next-line no-console
         console.log(err);
         setIsLoading(false);
       });
-  };
+  }, []);
 
-  React.useEffect(fetchEvents, []);
+  React.useEffect(fetchEvents, [fetchEvents]);
 
   const { open: openCreateEventModal, ModalDialog: CreateEventModal } =
     useCreateEvent({
@@ -70,7 +72,10 @@ const EventsPage = (): JSX.Element => {
     });
 
   const { open: openViewEventModal, ModalDialog: ViewEventModal } =
-    useViewEvent({ selectedEvent });
+    useViewEvent({
+      selectedEvent,
+      onSuccess: () => setSelectedEvent(undefined),
+    });
 
   const viewEventDetailHandler = (eventId: string): void => {
     // eslint-disable-next-line no-underscore-dangle

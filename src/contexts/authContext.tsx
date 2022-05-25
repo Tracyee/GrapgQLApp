@@ -1,4 +1,6 @@
 import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { LocationState } from '../types/LocationState';
 
 interface AuthContextType {
   token: string;
@@ -41,3 +43,20 @@ export const AuthProvider = ({
 export function useAuth(): AuthContextType {
   return React.useContext(AuthContext);
 }
+
+export const RequireAuth = ({
+  children,
+}: {
+  children: JSX.Element;
+}): JSX.Element => {
+  const auth = useAuth();
+  const location = useLocation();
+
+  const locationState: LocationState = { from: location };
+
+  if (!auth.token) {
+    return <Navigate to="/auth" state={locationState} replace />;
+  }
+
+  return children;
+};

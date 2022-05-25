@@ -6,6 +6,7 @@ import './baseModal.less';
 type ModalBaseProps = {
   show: boolean;
   title: string;
+  confirmText?: string;
   children: React.ReactNode;
   onClose: VoidFunction;
   onConfirm: React.FormEventHandler<HTMLButtonElement>;
@@ -14,6 +15,7 @@ type ModalBaseProps = {
 const ModalBase = ({
   show,
   title,
+  confirmText,
   children,
   onClose,
   onConfirm,
@@ -31,11 +33,15 @@ const ModalBase = ({
             Cancel
           </button>
           <button type="submit" className="btn" onClick={onConfirm}>
-            Confirm
+            {confirmText}
           </button>
         </section>
       </div>
     </>
   ) : null;
+
+ModalBase.defaultProps = {
+  confirmText: 'Confirm',
+};
 
 export default ModalBase;

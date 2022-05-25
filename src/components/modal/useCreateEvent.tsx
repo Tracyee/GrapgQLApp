@@ -30,7 +30,7 @@ const useCreateEvent = ({
   const close = () => setShow(false);
 
   const handleSubmit: React.FormEventHandler<HTMLButtonElement> = () => {
-    setShow(false);
+    close();
     const title = titleElRef.current?.value;
     const price = priceElRef.current?.valueAsNumber;
     const date = dateElRef.current?.value;
