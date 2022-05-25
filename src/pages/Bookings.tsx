@@ -1,6 +1,9 @@
+/* eslint-disable no-console */
+/* eslint-disable no-underscore-dangle */
 import React, { EffectCallback, useCallback, useEffect } from 'react';
 import { useAuth } from '../contexts/authContext';
 import { Booking } from '../types/payload';
+import BookingList from '../components/bookings/bookingList/bookingList';
 import Spinner from '../components/spinner/spinner';
 
 const BookingsPage = (): JSX.Element => {
@@ -53,6 +56,47 @@ const BookingsPage = (): JSX.Element => {
       });
   }, [auth.token]);
 
+  const deleteBooking = useCallback(
+    (bookingId: string) => {
+      setIsLoading(true);
+      const requestBody = {
+        query: `
+          mutation {
+            cancelBooking(bookingId: "${bookingId}") {
+            _id
+             title
+            }
+          }
+        `,
+      };
+
+      fetch('http://localhost:4000/graphql', {
+        method: 'POST',
+        body: JSON.stringify(requestBody),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Tracy ${auth.token}`,
+        },
+      })
+        .then(res => {
+          if (res.status !== 200 && res.status !== 201) {
+            throw new Error('Failed!');
+          }
+          return res.json();
+        })
+        .then(resData => {
+          console.log(resData);
+          setBookings(bookings.filter(booking => booking._id !== bookingId));
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.log(err);
+          setIsLoading(false);
+        });
+    },
+    [auth.token, bookings],
+  );
+
   useEffect(fetchBookings, [fetchBookings]);
 
   return (
@@ -60,15 +104,7 @@ const BookingsPage = (): JSX.Element => {
       {isLoading ? (
         <Spinner />
       ) : (
-        <ul>
-          {bookings.map(booking => (
-            // eslint-disable-next-line no-underscore-dangle
-            <li key={booking._id}>
-              {booking.event.title} -{' '}
-              {new Date(booking.createdAt).toLocaleDateString()}
-            </li>
-          ))}
-        </ul>
+        <BookingList bookings={bookings} onDelete={deleteBooking} />
       )}
     </>
   );

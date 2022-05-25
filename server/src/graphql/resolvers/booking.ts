@@ -18,7 +18,7 @@ export default {
       throw new Error('Unauthenticated!');
     }
     try {
-      const bookings = await Booking.find();
+      const bookings = await Booking.find({ user: req.userId });
       return bookings.map(booking => transformBooking(booking));
     } catch (err) {
       console.log(err);
@@ -30,12 +30,19 @@ export default {
       throw new Error('Unauthenticated!');
     }
     try {
+      const booking = await Booking.findOne({
+        user: req.userId,
+        event: args.eventId,
+      });
+      if (booking) {
+        throw new Error('Already booked!');
+      }
       const fetchedEvent = await Event.findOne({ _id: args.eventId });
-      const booking = new Booking({
+      const newBooking = new Booking({
         user: req.userId,
         event: fetchedEvent,
       });
-      const result = await booking.save();
+      const result = await newBooking.save();
       return transformBooking(result);
     } catch (err) {
       console.log(err);
