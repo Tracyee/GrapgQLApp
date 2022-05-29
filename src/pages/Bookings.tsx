@@ -61,13 +61,16 @@ const BookingsPage = (): JSX.Element => {
       setIsLoading(true);
       const requestBody = {
         query: `
-          mutation {
-            cancelBooking(bookingId: "${bookingId}") {
-            _id
-             title
+          mutation CancelBooking($bookingId: ID!) {
+            cancelBooking(bookingId: $bookingId) {
+              _id
+              title
             }
           }
         `,
+        variables: {
+          bookingId,
+        },
       };
 
       fetch('http://localhost:4000/graphql', {

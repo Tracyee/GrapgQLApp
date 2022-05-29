@@ -40,14 +40,17 @@ const useViewEvent = ({
     }
     const requestBody = {
       query: `
-              mutation {
-                bookEvent(eventId: "${selectedEvent?._id}") {
-                  _id
-                 createdAt
-                 updatedAt
-                }
-              }
-            `,
+        mutation BookEvent($id: ID!) {
+          bookEvent(eventId: $id) {
+            _id
+            createdAt
+            updatedAt
+          }
+        }
+      `,
+      variables: {
+        id: selectedEvent?._id,
+      },
     };
 
     fetch('http://localhost:4000/graphql', {

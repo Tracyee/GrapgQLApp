@@ -39,6 +39,10 @@ const getEvent = async (eventId: any) => {
 const getEvents = async (eventIds: any): Promise<any[]> => {
   try {
     const foundEvents = await Event.find({ _id: { $in: eventIds } });
+    foundEvents.sort(
+      (a, b) =>
+        eventIds.indexOf(a._id.toString()) - eventIds.indexOf(b._id.toString()),
+    );
     return foundEvents.map(event => transformEvent(event));
   } catch (err) {
     console.log(err);
