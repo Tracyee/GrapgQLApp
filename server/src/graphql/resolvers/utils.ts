@@ -1,8 +1,22 @@
 /* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
+import DataLoader from 'dataloader';
 import dateToString from '../../helpers/date';
 import Event from '../../models/event';
 import User from '../../models/user';
+
+const userLoader = new DataLoader(async (userIds: any) => {
+  try {
+    const users = await User.find({ _id: { $in: userIds } });
+    return users;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+});
+
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
+const eventLoader = new DataLoader(eventIds => getEvents(eventIds));
 
 export const transformEvent = (event: any): any => ({
   ...event._doc,
@@ -13,10 +27,9 @@ export const transformEvent = (event: any): any => ({
 });
 
 const getEvent = async (eventId: any) => {
-  // console.log('calling getEvent');
   try {
-    const event = await Event.findById(eventId);
-    return transformEvent(event);
+    const event = await eventLoader.load(eventId.toString());
+    return event;
   } catch (err) {
     console.log(err);
     throw err;
@@ -24,7 +37,6 @@ const getEvent = async (eventId: any) => {
 };
 
 const getEvents = async (eventIds: any): Promise<any[]> => {
-  // console.log('calling getEvents');
   try {
     const foundEvents = await Event.find({ _id: { $in: eventIds } });
     return foundEvents.map(event => transformEvent(event));
@@ -35,13 +47,12 @@ const getEvents = async (eventIds: any): Promise<any[]> => {
 };
 
 const getUser = async (userId: any): Promise<any> => {
-  // console.log('calling getUser');
   try {
-    const foundUser = await User.findById(userId);
+    const foundUser = await userLoader.load(userId.toString());
     return {
       ...foundUser._doc,
       _id: foundUser.id,
-      createdEvents: getEvents.bind(this, foundUser._doc.createdEvents),
+      createdEvents: () => eventLoader.loadMany(foundUser._doc.createdEvents),
     };
   } catch (err) {
     console.log(err);

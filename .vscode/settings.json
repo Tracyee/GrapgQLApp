@@ -47,5 +47,6 @@
     "source.fixAll.stylelint": true
   },
   "editor.formatOnPaste": false,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "synthwave84.brightness": 0.35
 }

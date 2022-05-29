@@ -34,6 +34,7 @@ const devConfig: webpack.Configuration = {
   devServer: {
     contentBase: path.resolve('public'),
     compress: true,
+    historyApiFallback: true,
     port: 3000,
     open: true,
     hot: true,
