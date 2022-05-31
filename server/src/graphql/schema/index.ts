@@ -4,7 +4,7 @@ export default buildSchema(`
       type Event {
         _id: ID!
         title: String!
-        description: String!
+        description: String
         price: Float!
         date: String!
         creator: User!
@@ -33,7 +33,7 @@ export default buildSchema(`
 
       input EventInput {
         title: String!
-        description: String!
+        description: String
         price: Float!
         date: String!
       }

@@ -9,6 +9,7 @@ interface AuthContextType {
   logout: (callback: VoidFunction) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const AuthContext = React.createContext<AuthContextType>(null!);
 
 export const AuthProvider = ({

@@ -1,5 +1,17 @@
 /* eslint-disable no-console */
 import React from 'react';
+import {
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Textarea,
+} from '@chakra-ui/react';
 import { useAuth } from '../../contexts/authContext';
 import { Event } from '../../types/payload';
 import ModalBase from './baseModal';
@@ -19,6 +31,11 @@ const useCreateEvent = ({
   onSuccess: (createdEvent: Event) => void;
 }): EventModalType => {
   const [show, setShow] = React.useState(false);
+
+  const [isTitleEmpty, setIsTitleEmpty] = React.useState(false);
+  const [isPriceEmpty, setIsPriceEmpty] = React.useState(false);
+  const [isDateEmpty, setIsDateEmpty] = React.useState(false);
+
   const auth = useAuth();
 
   const titleElRef = React.useRef<HTMLInputElement>(null);
@@ -30,18 +47,30 @@ const useCreateEvent = ({
   const close = () => setShow(false);
 
   const handleSubmit: React.FormEventHandler<HTMLButtonElement> = () => {
-    close();
+    setIsTitleEmpty(false);
+    setIsPriceEmpty(false);
+    setIsDateEmpty(false);
+
     const title = titleElRef.current?.value;
-    const price = priceElRef.current?.valueAsNumber;
+    const price = Number(priceElRef.current?.value);
     const date = dateElRef.current?.value;
     const description = descriptionElRef.current?.value;
 
-    if (
-      (title && title.trim().length === 0) ||
-      (price && price <= 0) ||
-      (date && date.trim().length === 0) ||
-      (description && description.trim().length === 0)
-    ) {
+    const invalidTitle = !title || title.trim().length === 0;
+    const invalidPrice = !price || price <= 0;
+    const invalidDate = !date || date.trim().length === 0;
+
+    if (invalidTitle) {
+      setIsTitleEmpty(true);
+    }
+    if (invalidPrice) {
+      setIsPriceEmpty(true);
+    }
+    if (invalidDate) {
+      setIsDateEmpty(true);
+    }
+
+    if (invalidTitle || invalidPrice || invalidDate) {
       return;
     }
 
@@ -50,7 +79,7 @@ const useCreateEvent = ({
 
     const requestBody = {
       query: `
-        mutation CreateEvent($title: String!, $description: String!, $price: Float!, $date: String!) {
+        mutation CreateEvent($title: String!, $description: String, $price: Float!, $date: String!) {
           createEvent(eventInput: {title: $title, description: $description, price: $price, date: $date}) {              _id
               title
               description
@@ -86,6 +115,10 @@ const useCreateEvent = ({
       .then(resData => {
         console.log(resData);
         onSuccess(resData.data.createEvent as Event);
+        setIsTitleEmpty(false);
+        setIsPriceEmpty(false);
+        setIsDateEmpty(false);
+        close();
       })
       .catch(err => {
         console.log(err);
@@ -100,22 +133,31 @@ const useCreateEvent = ({
       onConfirm={handleSubmit}
     >
       <form>
-        <div className="form-control">
-          <label htmlFor="title">Title</label>
-          <input type="text" id="title" ref={titleElRef} />
-        </div>
-        <div className="form-control">
-          <label htmlFor="price">Price</label>
-          <input type="number" id="price" ref={priceElRef} />
-        </div>
-        <div className="form-control">
-          <label htmlFor="date">Date</label>
-          <input type="datetime-local" id="date" ref={dateElRef} />
-        </div>
-        <div className="form-control">
-          <label htmlFor="description">Description</label>
-          <textarea id="description" rows={4} ref={descriptionElRef} />
-        </div>
+        <FormControl isInvalid={isTitleEmpty} isRequired>
+          <FormLabel htmlFor="title">Title</FormLabel>
+          <Input type="text" id="title" ref={titleElRef} />
+          <FormErrorMessage>Title is required</FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={isPriceEmpty} isRequired>
+          <FormLabel htmlFor="price">Price</FormLabel>
+          <NumberInput variant="flushed" precision={2} step={1}>
+            <NumberInputField id="price" ref={priceElRef} />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+          <FormErrorMessage>Price is required</FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={isDateEmpty} isRequired>
+          <FormLabel htmlFor="date">Date</FormLabel>
+          <Input type="datetime-local" id="date" ref={dateElRef} />
+          <FormErrorMessage>Date is required</FormErrorMessage>
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="description">Description</FormLabel>
+          <Textarea id="description" rows={4} ref={descriptionElRef} />
+        </FormControl>
       </form>
     </ModalBase>
   );

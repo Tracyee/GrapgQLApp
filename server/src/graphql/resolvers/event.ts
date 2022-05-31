@@ -6,7 +6,7 @@ import { transformEvent } from './utils';
 type CreateEventArgType = {
   eventInput: {
     title: string;
-    description: string;
+    description: string | undefined;
     price: number;
     date: string;
   };

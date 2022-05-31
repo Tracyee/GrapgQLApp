@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import React, { EffectCallback, useCallback } from 'react';
+import { Button } from '@chakra-ui/react';
 import useCreateEvent from '../components/modal/useCreateEvent';
 import useViewEvent from '../components/modal/useViewEvent';
 import EventList from '../components/events/eventList/eventList';
@@ -84,14 +85,15 @@ const EventsPage = (): JSX.Element => {
   };
 
   return (
-    <>
+    <div className="events-page">
       {auth.token && (
         <div className="events-control">
           <p>Share your own Events!</p>
+          <br />
           <CreateEventModal />
-          <button type="button" className="btn" onClick={openCreateEventModal}>
+          <Button variant="with-shadow" onClick={openCreateEventModal}>
             Create Event
-          </button>
+          </Button>
         </div>
       )}
       <ViewEventModal />
@@ -104,7 +106,7 @@ const EventsPage = (): JSX.Element => {
           onViewDetail={viewEventDetailHandler}
         />
       )}
-    </>
+    </div>
   );
 };
 

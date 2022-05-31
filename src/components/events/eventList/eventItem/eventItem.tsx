@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Button } from '@chakra-ui/react';
 import './eventItem.less';
 
 type EventItemProps = {
@@ -32,9 +32,12 @@ const EventItem = ({
       {userId === creatorId ? (
         <p>Your the owner of this event.</p>
       ) : (
-        <button type="button" className="btn" onClick={() => onDetail(eventId)}>
+        <Button variant="with-shadow" onClick={() => onDetail(eventId)}>
           View Details
-        </button>
+        </Button>
+        // <button type="button" className="btn" onClick={() => onDetail(eventId)}>
+        //   View Details
+        // </button>
       )}
     </div>
   </li>

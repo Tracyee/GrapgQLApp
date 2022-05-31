@@ -7,7 +7,7 @@ export type User = {
 export type Event = {
   _id: string;
   title: string;
-  description: string;
+  description?: string;
   price: number;
   date: string;
   creator?: User;

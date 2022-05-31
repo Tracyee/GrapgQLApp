@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/authContext';
 import { Booking } from '../types/payload';
 import BookingList from '../components/bookings/bookingList/bookingList';
 import Spinner from '../components/spinner/spinner';
+import './bookings.less';
 
 const BookingsPage = (): JSX.Element => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -103,13 +104,13 @@ const BookingsPage = (): JSX.Element => {
   useEffect(fetchBookings, [fetchBookings]);
 
   return (
-    <>
+    <div className="bookings-page">
       {isLoading ? (
         <Spinner />
       ) : (
         <BookingList bookings={bookings} onDelete={deleteBooking} />
       )}
-    </>
+    </div>
   );
 };
 

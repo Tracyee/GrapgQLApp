@@ -1,6 +1,6 @@
 import React from 'react';
+import { Button, ButtonGroup } from '@chakra-ui/react';
 import BackDrop from '../backdrop/backdrop';
-
 import './baseModal.less';
 
 type ModalBaseProps = {
@@ -29,12 +29,10 @@ const ModalBase = ({
         </header>
         <section className="modal-content">{children}</section>
         <section className="modal-actions">
-          <button type="button" className="btn" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="submit" className="btn" onClick={onConfirm}>
-            {confirmText}
-          </button>
+          <ButtonGroup variant="with-shadow" spacing="3">
+            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onConfirm}>{confirmText}</Button>
+          </ButtonGroup>
         </section>
       </div>
     </>

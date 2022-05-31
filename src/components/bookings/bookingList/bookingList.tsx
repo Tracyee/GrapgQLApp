@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import React from 'react';
+import { Button } from '@chakra-ui/react';
 import { Booking } from '../../../types/payload';
 import './bookingList.less';
 
@@ -18,13 +19,9 @@ const BookingList = ({
           {new Date(booking.createdAt).toLocaleDateString()}
         </div>
         <div className="bookings-item-actions">
-          <button
-            type="button"
-            className="btn"
-            onClick={() => onDelete(booking._id)}
-          >
+          <Button variant="with-shadow" onClick={() => onDelete(booking._id)}>
             Cancel
-          </button>
+          </Button>
         </div>
       </li>
     ))}
